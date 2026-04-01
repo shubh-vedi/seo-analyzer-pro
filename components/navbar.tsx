@@ -2,6 +2,7 @@ import Link from "next/link"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
+import { LogoutButton } from "./logout-button"
 
 export async function Navbar() {
   const session = await getServerSession(authOptions)
@@ -25,7 +26,7 @@ export async function Navbar() {
           </div>
 
           {session ? (
-            <>
+            <div className="flex items-center gap-2">
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm" className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 font-bold px-4 transition-all">
                   Dashboard
@@ -36,7 +37,8 @@ export async function Navbar() {
                   Analyze
                 </Button>
               </Link>
-            </>
+              <LogoutButton />
+            </div>
           ) : (
             <Link href="/login">
               <Button size="sm" className="rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-xl shadow-blue-500/30 px-8 transition-all hover:scale-105 active:scale-95">

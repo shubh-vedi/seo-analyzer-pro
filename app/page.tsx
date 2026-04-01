@@ -5,7 +5,12 @@ import { Badge } from "@/components/ui/badge"
 import { WaitlistForm } from "@/components/waitlist-form"
 import { Zap, BarChart2, Clock, CheckCircle, Search, ShieldCheck, Sparkles, TrendingUp, Laptop, Globe } from "lucide-react"
 
-export default function LandingPage() {
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions)
+
   return (
     <main className="relative overflow-hidden pt-20 bg-background">
       {/* Hero Section */}
@@ -29,21 +34,32 @@ export default function LandingPage() {
           
           <p className="text-xl text-slate-500 max-w-2xl mx-auto mb-14 leading-relaxed font-medium">
             Get a deep-metadata 100-point audit and actionable fix 
-            suggestions from <span className="text-slate-900 font-bold border-b-2 border-blue-600/20">Gemini 2.5 Flash</span> in under 5 seconds.
+            suggestions from <span className="text-slate-900 font-bold border-b-2 border-blue-600/20">Advanced AI</span> in just 5 seconds.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 justify-center items-center w-full max-w-md">
-            <Link href="/analyze" className="w-full sm:w-auto">
-              <Button size="lg" variant="premium" className="w-full h-16 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
-                Deep Scan Your URL
-                <Search className="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-            <Link href="/login" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full h-16 px-12 border-slate-200 text-slate-900 font-bold shadow-md hover:bg-white hover:border-slate-300">
-                Sign In
-              </Button>
-            </Link>
+            {session ? (
+              <Link href="/dashboard" className="w-full">
+                <Button size="lg" variant="premium" className="w-full h-16 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
+                  Go to Dashboard
+                  <TrendingUp className="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/analyze" className="w-full sm:w-auto">
+                  <Button size="lg" variant="premium" className="w-full h-16 shadow-2xl transition-all hover:scale-105 active:scale-95 group">
+                    Deep Scan Your URL
+                    <Search className="w-5 h-5 ml-3 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </Link>
+                <Link href="/login" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="h-16 px-12 border-slate-200 text-slate-900 font-bold shadow-md hover:bg-white hover:border-slate-300">
+                    Sign In
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
           
           <div className="mt-20 flex items-center gap-10 justify-center opacity-30">
@@ -68,7 +84,7 @@ export default function LandingPage() {
         <div className="grid lg:grid-cols-3 gap-8">
            {[
             { icon: Zap, title: "Velocity Audit", desc: "Our engine executes 15+ comprehensive technical checks across your DOM in milliseconds." },
-            { icon: Sparkles, title: "Gemini Synthesis", desc: "Advanced AI models synthesize suggestions to specifically match your niche's SEO requirements." },
+            { icon: Sparkles, title: "AI Synthesis", desc: "Advanced AI models synthesize suggestions to specifically match your niche's SEO requirements." },
             { icon: Clock, title: "Persistent History", desc: "Maintain a cloud-synced database of your progress to track SEO score improvements over time." }
           ].map(({ icon: Icon, title, desc }) => (
             <Card key={title} className="hover-lift border-slate-100 bg-white shadow-xl shadow-blue-900/5">

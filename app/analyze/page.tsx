@@ -95,7 +95,7 @@ export default function AnalyzePage() {
         </Badge>
         <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6 text-gradient">Audit Your URL.</h1>
         <p className="text-slate-500 max-w-lg mx-auto leading-relaxed font-medium">
-          Instant technical metadata parsing with <span className="text-blue-600 font-bold border-b-2 border-blue-600/10">Gemini 2.5 Flash</span> powered synthesis.
+          Instant technical metadata parsing with <span className="text-blue-600 font-bold border-b-2 border-blue-600/10">Advanced AI</span> powered synthesis.
         </p>
       </div>
 
