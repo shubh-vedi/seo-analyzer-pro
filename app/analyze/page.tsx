@@ -189,14 +189,28 @@ export default function AnalyzePage() {
                 {/* Visual Score Section */}
                 <div className="p-16 border-r border-slate-50 flex flex-col items-center justify-center bg-slate-50/30 relative overflow-hidden">
                   <div className="absolute inset-0 bg-radial-gradient(blue-100,transparent) opacity-10" />
-                  <div className="relative group">
-                    <ScoreRing score={result.score} size={220} />
+                  <div className="flex flex-row items-center justify-center gap-10 relative group">
+                    <div className="flex flex-col items-center">
+                      <ScoreRing score={result.score} size={180} label="SEO" />
+                    </div>
+                    <div className="flex flex-col items-center">
+                      <ScoreRing score={result.aeoScore || 0} size={180} label="AEO" />
+                      <div className="mt-2 text-xl font-black text-blue-600 bg-blue-50 px-3 py-0.5 rounded-lg border border-blue-100">
+                        {result.aeoResult?.grade || "F"}
+                      </div>
+                    </div>
                   </div>
                   <div className="mt-10 text-center">
-                    <div className={`text-2xl font-black mb-1 ${result.score >= 70 ? "text-emerald-500" : result.score >= 40 ? "text-amber-500" : "text-rose-600"}`}>
-                      {result.score >= 70 ? "OPTIMIZED" : result.score >= 40 ? "SUB-OPTIMAL" : "CRITICAL"}
+                    <div className="flex items-center gap-2 justify-center mb-1">
+                      <div className={`text-2xl font-black ${result.score >= 70 ? "text-emerald-500" : result.score >= 40 ? "text-amber-500" : "text-rose-600"}`}>
+                        {result.score >= 70 ? "OPTIMIZED" : result.score >= 40 ? "SUB-OPTIMAL" : "CRITICAL"}
+                      </div>
+                      <div className="w-1 h-1 rounded-full bg-slate-200" />
+                      <div className={`text-2xl font-black ${result.aeoScore >= 70 ? "text-blue-500" : result.aeoScore >= 40 ? "text-amber-500" : "text-rose-600"}`}>
+                        {result.aeoScore >= 70 ? "AEO READY" : result.aeoScore >= 40 ? "AEO FAIR" : "AEO WEAK"}
+                      </div>
                     </div>
-                    <div className="text-[10px] font-black text-slate-300 tracking-[0.4em] uppercase">ALGORITHM RATING</div>
+                    <div className="text-[10px] font-black text-slate-300 tracking-[0.4em] uppercase text-center">ANALYTICS ENGINE RATING</div>
                   </div>
                 </div>
 

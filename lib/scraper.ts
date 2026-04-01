@@ -22,6 +22,10 @@ export interface ScrapedData {
   charset: string | null
   hasFavicon: boolean
   wordCount: number
+  hasLists: boolean
+  hasTables: boolean
+  first500Words: string
+  h2h3Paragraphs: string[]
   url: string
 }
 
@@ -86,6 +90,13 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
   const h1Count = headings.filter((h) => h.tag === "h1").length
   const h2Count = headings.filter((h) => h.tag === "h2").length
 
+  // Paragraphs after H2/H3 for AEO
+  const h2h3Paragraphs: string[] = []
+  $('h2, h3').each((_, el) => {
+    const nextP = $(el).nextAll('p').first().text().trim()
+    if (nextP) h2h3Paragraphs.push(nextP)
+  })
+
   // Images
   let imageCount = 0
   let missingAltCount = 0
@@ -137,9 +148,15 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
     $('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').length > 0 ||
     false
 
-  // Word count
+  // Lists & Tables
+  const hasLists = $('ul, ol').length > 0
+  const hasTables = $('table').length > 0
+
+  // Word count & First 500 words
   const bodyText = $("body").text().replace(/\s+/g, " ").trim()
-  const wordCount = bodyText.split(" ").filter((w) => w.length > 0).length
+  const words = bodyText.split(" ").filter((w) => w.length > 0)
+  const wordCount = words.length
+  const first500Words = words.slice(0, 500).join(" ")
 
   return {
     title,
@@ -163,6 +180,10 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
     charset,
     hasFavicon,
     wordCount,
+    hasLists,
+    hasTables,
+    first500Words,
+    h2h3Paragraphs,
     url,
   }
 }

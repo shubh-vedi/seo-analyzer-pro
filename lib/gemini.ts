@@ -10,7 +10,11 @@ export interface AiTip {
 export async function getAiTips(auditData: unknown): Promise<AiTip[]> {
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
-  const prompt = `You are an expert SEO consultant. Analyze this data and give exactly 5 actionable fix suggestions, ranked by impact. Be specific with character counts and exact text recommendations. Format as JSON array: [{ "priority": 1, "title": "...", "description": "...", "impact": "high|medium|low" }]
+  const prompt = `You are an expert SEO and AEO (Answer Engine Optimization) consultant. 
+Analyze the provided page data, including the AEO score breakdown, and give exactly 5 actionable fix suggestions ranked by impact.
+Focus on both traditional SEO (meta tags, headings) and AEO (helping this page be cited by AI answer engines like ChatGPT, Gemini, and Perplexity).
+Be specific with character counts and exact text recommendations (e.g. "Direct answer: [Proposed Sentence]").
+Format as JSON array: [{ "priority": 1, "title": "...", "description": "...", "impact": "high|medium|low" }]
 
 Page data: ${JSON.stringify(auditData, null, 2)}`
 

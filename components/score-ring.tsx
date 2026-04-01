@@ -3,9 +3,10 @@
 interface ScoreRingProps {
   score: number
   size?: number
+  label?: string
 }
 
-export function ScoreRing({ score, size = 120 }: ScoreRingProps) {
+export function ScoreRing({ score, size = 120, label }: ScoreRingProps) {
   const radius = (size - 20) / 2
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (score / 100) * circumference
@@ -38,10 +39,13 @@ export function ScoreRing({ score, size = 120 }: ScoreRingProps) {
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-3xl font-bold" style={{ color }}>
-          {score}
-        </span>
-        <span className="text-xs text-zinc-400">/100</span>
+        {label && <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{label}</span>}
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-3xl font-black" style={{ color }}>
+            {score}
+          </span>
+          <span className="text-[10px] font-black text-slate-500">/100</span>
+        </div>
       </div>
     </div>
   )

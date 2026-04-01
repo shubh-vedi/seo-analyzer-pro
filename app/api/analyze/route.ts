@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { scrapeUrl } from "@/lib/scraper"
 import { calculateScore, getIssues } from "@/lib/scorer"
+import { calculateAEOScore } from "@/lib/aeo-scorer"
 import { getAiTips } from "@/lib/gemini"
 
 export async function POST(req: NextRequest) {
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
     }
 
-    // Rate limiting: 5 audits per day
+    // Rate limiting: 2 audits per day (resets at midnight UTC)
     const userId = session.user.id
     const startOfDay = new Date()
     startOfDay.setUTCHours(0, 0, 0, 0)
@@ -51,11 +52,14 @@ export async function POST(req: NextRequest) {
     // Score
     const scoreBreakdown = calculateScore(scrapedData)
     const issues = getIssues(scrapedData, scoreBreakdown)
+    
+    // AEO Score
+    const aeoResult = calculateAEOScore(scrapedData)
 
     // AI tips
     let aiTips: string | null = null
     try {
-      const tips = await getAiTips({ ...scrapedData, scoreBreakdown, issues })
+      const tips = await getAiTips({ ...scrapedData, scoreBreakdown, issues, aeoResult })
       aiTips = JSON.stringify(tips)
     } catch (err) {
       console.error("Gemini error:", err)
@@ -66,7 +70,7 @@ export async function POST(req: NextRequest) {
       data: {
         url: parsedUrl.toString(),
         score: scoreBreakdown.total,
-        data: { ...scrapedData, scoreBreakdown, issues } as object,
+        data: { ...scrapedData, scoreBreakdown, issues, aeoResult } as object,
         aiTips,
         userId,
       },
@@ -76,6 +80,8 @@ export async function POST(req: NextRequest) {
       id: audit.id,
       url: audit.url,
       score: audit.score,
+      aeoScore: aeoResult.score,
+      aeoResult: aeoResult,
       data: audit.data,
       aiTips: audit.aiTips ? JSON.parse(audit.aiTips) : null,
       createdAt: audit.createdAt,

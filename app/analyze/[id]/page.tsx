@@ -42,16 +42,22 @@ export default async function AuditDetailPage({ params }: { params: Promise<{ id
 
       <Card className="bg-zinc-900 border-zinc-800 mb-6">
         <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex flex-col items-center">
-              <ScoreRing score={audit.score} size={140} />
-              <div className="mt-3 text-center">
-                <div className={`text-sm font-semibold ${audit.score >= 70 ? "text-green-400" : audit.score >= 40 ? "text-amber-400" : "text-red-400"}`}>
-                  {audit.score >= 70 ? "Good" : audit.score >= 40 ? "Needs Work" : "Poor"}
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="flex flex-row items-center gap-8">
+              <div className="flex flex-col items-center">
+                <ScoreRing score={audit.score} size={140} label="SEO" />
+                <div className="mt-2 text-center text-xs font-black uppercase text-slate-500 tracking-widest">
+                   {audit.score >= 70 ? "Good" : audit.score >= 40 ? "Average" : "Poor"}
+                </div>
+              </div>
+              <div className="flex flex-col items-center">
+                <ScoreRing score={data.aeoResult?.score || 0} size={140} label="AEO" />
+                <div className="mt-2 text-center text-xs font-black uppercase text-blue-600 tracking-widest bg-blue-600/5 px-2 py-0.5 rounded border border-blue-600/10">
+                   Grade: {data.aeoResult?.grade || "F"}
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-1 w-full">
               {[
                 { label: "Word Count", value: data.wordCount },
                 { label: "H1 Tags", value: data.h1Count },
