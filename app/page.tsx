@@ -132,7 +132,7 @@ export default function LandingPage() {
               
               <div className="space-y-5 text-left mb-12 border-t border-slate-50 pt-10">
                 {[
-                  "5 deep-scans per day",
+                  "2 deep-scans per day",
                   "Full Technical 100pt score",
                   "Gemini AI Fix Engine",
                   "Scan timeline history",

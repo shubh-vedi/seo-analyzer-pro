@@ -38,9 +38,9 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (todayCount >= 5) {
+    if (todayCount >= 2) {
       return NextResponse.json(
-        { error: "Daily limit reached. You can run 5 audits per day. Resets at midnight UTC." },
+        { error: "Daily limit reached. You can run 2 audits per day. Resets at midnight UTC." },
         { status: 429 }
       )
     }

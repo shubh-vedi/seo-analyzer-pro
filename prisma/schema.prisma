@@ -12,7 +12,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  credits       Int       @default(5)
+  credits       Int       @default(2)
   createdAt     DateTime  @default(now())
   audits        Audit[]
   accounts      Account[]

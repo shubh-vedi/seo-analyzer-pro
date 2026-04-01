@@ -39,7 +39,7 @@ export default async function DashboardPage() {
   const startOfDay = new Date()
   startOfDay.setUTCHours(0, 0, 0, 0)
   const todayCount = audits.filter((a) => new Date(a.createdAt) >= startOfDay).length
-  const dailyLimit = 5
+  const dailyLimit = 2
   const creditsLeft = Math.max(0, dailyLimit - todayCount)
 
   return (
