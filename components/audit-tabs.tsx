@@ -26,7 +26,7 @@ interface AuditTabsProps {
 
 export function AuditTabs({ data, aiTips, type = "url" }: AuditTabsProps) {
   return (
-    <Tabs defaultValue={type === "text" ? "ai" : "meta"} className="w-full">
+    <Tabs defaultValue={type === "text" ? "headings" : "meta"} className="w-full">
       <TabsList className="bg-slate-100/50 border border-slate-200/60 p-1 flex-wrap h-auto rounded-2xl gap-1 mb-8">
         {type !== "text" && (
           <>
@@ -72,10 +72,6 @@ export function AuditTabs({ data, aiTips, type = "url" }: AuditTabsProps) {
             </TabsTrigger>
           </>
         )}
-
-        <TabsTrigger value="ai" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-xl px-4 py-2 text-xs font-black text-slate-500 transition-all flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5" /> AI Insights
-        </TabsTrigger>
       </TabsList>
 
       {/* Meta Tags */}
@@ -501,71 +497,6 @@ export function AuditTabs({ data, aiTips, type = "url" }: AuditTabsProps) {
             ))
           )}
         </div>
-      </TabsContent>
-
-      {/* AI Tips */}
-      <TabsContent value="ai" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {!aiTips ? (
-          <div className="p-16 text-center bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-100">
-             <p className="text-slate-400 font-bold">Waiting for Gemini synthesis...</p>
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            {aiTips.map((tip) => (
-               <div key={tip.priority} className="p-6 md:p-10 rounded-[2.5rem] border border-slate-100 bg-white shadow-xl shadow-blue-900/5 relative group hover:border-blue-600/10 transition-all">
-                <div className="flex flex-col md:flex-row md:items-start gap-6 mb-6">
-                  <div className="w-14 h-14 shrink-0 rounded-2xl bg-blue-600/5 flex items-center justify-center font-black text-blue-600 text-xl border border-blue-600/10 group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    {tip.priority}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-3 mb-2">
-                      <h4 className="font-black text-slate-900 text-2xl tracking-tight leading-none uppercase">{tip.title}</h4>
-                      <Badge
-                        className={
-                          tip.impact === "high"
-                            ? "bg-rose-500/10 text-rose-500 border-0 px-3 font-black text-[9px] uppercase tracking-widest"
-                            : tip.impact === "medium"
-                            ? "bg-amber-400/10 text-amber-500 border-0 px-3 font-black text-[9px] uppercase tracking-widest"
-                            : "bg-blue-600/10 text-blue-600 border-0 px-3 font-black text-[9px] uppercase tracking-widest"
-                        }
-                      >
-                         IMPACT: {tip.impact}
-                      </Badge>
-                      <Badge variant="outline" className="border-slate-200 text-slate-500 bg-slate-50 px-3 font-black text-[9px] uppercase tracking-widest">
-                         {tip.framework} FRAMEWORK
-                      </Badge>
-                    </div>
-                    <p className="text-sm md:text-base text-slate-600 font-medium leading-relaxed">
-                      {tip.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                   <div className="bg-rose-50/50 p-6 rounded-[1.5rem] border border-rose-50">
-                      <div className="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-2">Why It Matters</div>
-                      <p className="text-sm text-slate-700 font-medium">{tip.whyItMatters}</p>
-                   </div>
-                   <div className="bg-emerald-50/50 p-6 rounded-[1.5rem] border border-emerald-50">
-                      <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">How To Fix It</div>
-                      <p className="text-sm text-slate-700 font-medium">{tip.howToFix}</p>
-                   </div>
-                </div>
-
-                {tip.codeBlock && (
-                   <div className="mt-4 relative">
-                      <div className="absolute top-4 right-4 bg-slate-800 text-slate-300 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest z-10">
-                        Generated Block
-                      </div>
-                      <pre className="text-xs font-mono bg-slate-900 border border-slate-800 rounded-[1.5rem] p-6 overflow-auto text-emerald-400/90 shadow-inner whitespace-pre-wrap">
-                        {tip.codeBlock}
-                      </pre>
-                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
       </TabsContent>
     </Tabs>
   )
