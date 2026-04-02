@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { scrapeUrl } from "@/lib/scraper"
+import { scrapeUrl, scrapeText } from "@/lib/scraper"
 import { calculateScore, getIssues } from "@/lib/scorer"
 import { calculateAEOScore } from "@/lib/aeo-scorer"
 import { calculateGEOScore } from "@/lib/geo-scorer"
@@ -17,17 +17,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { url } = await req.json()
-    if (!url) {
+    const { url, text, type = "url", bulkId } = await req.json()
+    
+    if (type === "url" && !url) {
       return NextResponse.json({ error: "URL is required" }, { status: 400 })
     }
+    if (type === "text" && !text) {
+      return NextResponse.json({ error: "Text content is required" }, { status: 400 })
+    }
 
-    // Validate URL
-    let parsedUrl: URL
-    try {
-      parsedUrl = new URL(url)
-    } catch {
-      return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+    // Validate URL if type is url
+    let parsedUrl: URL | undefined
+    if (type === "url") {
+      try {
+        parsedUrl = new URL(url)
+      } catch {
+        return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
+      }
     }
 
     // Rate limiting: 5 audits per day (resets at midnight UTC)
@@ -50,7 +56,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Scrape
-    const scrapedData = await scrapeUrl(parsedUrl.toString())
+    let scrapedData;
+    if (type === "text") {
+      scrapedData = await scrapeText(text)
+    } else {
+      scrapedData = await scrapeUrl(parsedUrl!.toString())
+    }
 
     // Scores
     const scoreBreakdown = calculateScore(scrapedData)
@@ -63,7 +74,7 @@ export async function POST(req: NextRequest) {
     // AI tips
     let aiTips: string | null = null
     try {
-      const tips = await getAiTips({ ...scrapedData, scoreBreakdown, issues, aeoResult })
+      const tips = await getAiTips({ ...scrapedData, scoreBreakdown, issues, aeoResult, geoResult, aioResult, guidelinesResult })
       aiTips = JSON.stringify(tips)
     } catch (err) {
       console.error("Gemini error:", err)
@@ -72,7 +83,10 @@ export async function POST(req: NextRequest) {
     // Save to DB
     const audit = await prisma.audit.create({
       data: {
-        url: parsedUrl.toString(),
+        url: type === "url" ? parsedUrl!.toString() : "",
+        sourceText: type === "text" ? text : null,
+        type,
+        bulkId: bulkId || null,
         score: scoreBreakdown.total,
         data: {
           ...scrapedData,
@@ -91,6 +105,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       id: audit.id,
       url: audit.url,
+      type: audit.type,
+      sourceText: audit.sourceText,
+      bulkId: audit.bulkId,
       score: audit.score,
       aeoScore: aeoResult.score,
       aeoResult,

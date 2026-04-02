@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased selection:bg-primary/10 selection:text-primary min-h-screen relative overflow-x-hidden transition-colors duration-500`}>
         {/* Ambient Background Glows for Light Mode */}
         <div className="fixed inset-0 pointer-events-none -z-10 bg-background overflow-hidden">

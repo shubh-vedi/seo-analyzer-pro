@@ -43,9 +43,9 @@ export default async function DashboardPage() {
   const creditsLeft = Math.max(0, dailyLimit - todayCount)
 
   return (
-    <main className="max-w-7xl mx-auto px-4 pt-44 pb-32">
+    <main className="max-w-5xl mx-auto pb-32 pt-10">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16 animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div className="space-y-4">
            <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/10 font-black tracking-widest text-[10px] px-4 py-1.5 rounded-full">
              LIVE ACCOUNT: SYNCED

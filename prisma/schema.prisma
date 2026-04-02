@@ -20,14 +20,17 @@ model User {
 }
 
 model Audit {
-  id        String   @id @default(cuid())
-  url       String
-  score     Int
-  data      Json
-  aiTips    String?  @db.Text
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  url        String?
+  sourceText String?  @db.Text
+  type       String   @default("url") // "url" or "text"
+  bulkId     String?
+  score      Int
+  data       Json
+  aiTips     String?  @db.Text
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
 }
 
 model Account {

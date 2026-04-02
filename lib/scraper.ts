@@ -52,6 +52,17 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
   }
 
   const html = await response.text()
+  return parseHtmlContent(html, url)
+}
+
+export async function scrapeText(text: string): Promise<ScrapedData> {
+  // If it doesn't look like HTML, wrap it in basic tags
+  const isHtml = text.includes("<") && text.includes(">")
+  const html = isHtml ? text : `<html><head><title>Raw Text Snippet</title></head><body><p>${text}</p></body></html>`
+  return parseHtmlContent(html, "raw-text-input")
+}
+
+export async function parseHtmlContent(html: string, url: string): Promise<ScrapedData> {
   const $ = cheerio.load(html)
 
   // Title
@@ -126,9 +137,22 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
   // Links
   let internalLinks = 0
   let externalLinks = 0
-  const baseHost = new URL(url).hostname
+  let baseHost = ""
+  try {
+    baseHost = new URL(url).hostname
+  } catch {
+    // URL might be a placeholder like "raw-text-input"
+  }
+
   $("a[href]").each((_, el) => {
     const href = $(el).attr("href") || ""
+    if (!baseHost) {
+      // If we don't have a valid base URL, all links can be treated as external 
+      // or we just skip categorizing them correctly. Let's just say external.
+      externalLinks++
+      return
+    }
+    
     try {
       const linkUrl = new URL(href, url)
       if (linkUrl.hostname === baseHost) {
