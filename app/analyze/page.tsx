@@ -185,37 +185,23 @@ export default function AnalyzePage() {
           {/* Report Summary Card */}
           <Card className="border-slate-100 shadow-3xl shadow-blue-900/10 overflow-hidden">
             <CardContent className="p-0">
-              <div className="grid lg:grid-cols-[400px_1fr] gap-0">
+              <div className="flex flex-col">
                 {/* Visual Score Section */}
-                <div className="p-16 border-r border-slate-50 flex flex-col items-center justify-center bg-slate-50/30 relative overflow-hidden">
+                <div className="p-12 border-b border-slate-50 bg-slate-50/30 relative overflow-hidden">
                   <div className="absolute inset-0 bg-radial-gradient(blue-100,transparent) opacity-10" />
-                  <div className="flex flex-row items-center justify-center gap-10 relative group">
-                    <div className="flex flex-col items-center">
-                      <ScoreRing score={result.score} size={180} label="SEO" />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <ScoreRing score={result.aeoScore || 0} size={180} label="AEO" />
-                      <div className="mt-2 text-xl font-black text-blue-600 bg-blue-50 px-3 py-0.5 rounded-lg border border-blue-100">
-                        {result.aeoResult?.grade || "F"}
-                      </div>
-                    </div>
+                  <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16 relative z-10">
+                    <ScoreRing score={result.aeoScore || 0} size={150} label="AEO" subtitle={`Grade ${result.aeoResult?.grade || "F"}`} colorOverride="#06b6d4" />
+                    <ScoreRing score={result.geoScore || 0} size={150} label="GEO" subtitle={`Grade ${result.geoResult?.grade || "F"}`} colorOverride="#8b5cf6" />
+                    <ScoreRing score={result.aioScore || 0} size={150} label="AIO" subtitle={`Grade ${result.aioResult?.grade || "F"}`} colorOverride="#f59e0b" />
+                    <ScoreRing score={result.guidelinesScore || 0} size={150} label="E-E-A-T" subtitle={`Grade ${result.guidelinesResult?.grade || "F"}`} colorOverride="#10b981" />
                   </div>
-                  <div className="mt-10 text-center">
-                    <div className="flex items-center gap-2 justify-center mb-1">
-                      <div className={`text-2xl font-black ${result.score >= 70 ? "text-emerald-500" : result.score >= 40 ? "text-amber-500" : "text-rose-600"}`}>
-                        {result.score >= 70 ? "OPTIMIZED" : result.score >= 40 ? "SUB-OPTIMAL" : "CRITICAL"}
-                      </div>
-                      <div className="w-1 h-1 rounded-full bg-slate-200" />
-                      <div className={`text-2xl font-black ${result.aeoScore >= 70 ? "text-blue-500" : result.aeoScore >= 40 ? "text-amber-500" : "text-rose-600"}`}>
-                        {result.aeoScore >= 70 ? "AEO READY" : result.aeoScore >= 40 ? "AEO FAIR" : "AEO WEAK"}
-                      </div>
-                    </div>
-                    <div className="text-[10px] font-black text-slate-300 tracking-[0.4em] uppercase text-center">ANALYTICS ENGINE RATING</div>
+                  <div className="mt-8 text-center">
+                    <div className="text-[10px] font-black text-slate-300 tracking-[0.4em] uppercase text-center">MODERN OPTIMIZATION FRAMEWORKS</div>
                   </div>
                 </div>
 
                 {/* Performance Stat Grid */}
-                <div className="p-16 grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white">
+                <div className="p-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 bg-white">
                    {[
                     { label: "Word Density", value: result.data.wordCount, icon: Fingerprint, color: "text-blue-600" },
                     { label: "DOM Architecture", value: `${result.data.h1Count} x H1`, icon: BarChart3, color: "text-indigo-600" },

@@ -12,8 +12,11 @@ export interface ScrapedData {
   headings: { tag: string; text: string }[]
   h1Count: number
   h2Count: number
+  h3Count: number
   imageCount: number
   missingAltCount: number
+  imageAltTexts: string[]
+  altTextMissingRatio: number
   internalLinks: number
   externalLinks: number
   schemas: string[]
@@ -24,6 +27,13 @@ export interface ScrapedData {
   wordCount: number
   hasLists: boolean
   hasTables: boolean
+  hasCodeBlocks: boolean
+  hasAuthorSchema: boolean
+  hasOrganizationSchema: boolean
+  hasDatePublished: boolean
+  hasDateModified: boolean
+  hasBreadcrumbSchema: boolean
+  hasNav: boolean
   first500Words: string
   h2h3Paragraphs: string[]
   url: string
@@ -89,6 +99,7 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
 
   const h1Count = headings.filter((h) => h.tag === "h1").length
   const h2Count = headings.filter((h) => h.tag === "h2").length
+  const h3Count = headings.filter((h) => h.tag === "h3").length
 
   // Paragraphs after H2/H3 for AEO
   const h2h3Paragraphs: string[] = []
@@ -100,11 +111,17 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
   // Images
   let imageCount = 0
   let missingAltCount = 0
+  const imageAltTexts: string[] = []
   $("img").each((_, el) => {
     imageCount++
     const alt = $(el).attr("alt")
-    if (!alt || alt.trim() === "") missingAltCount++
+    if (!alt || alt.trim() === "") {
+      missingAltCount++
+    } else {
+      imageAltTexts.push(alt.trim())
+    }
   })
+  const altTextMissingRatio = imageCount > 0 ? missingAltCount / imageCount : 0
 
   // Links
   let internalLinks = 0
@@ -148,9 +165,19 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
     $('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').length > 0 ||
     false
 
-  // Lists & Tables
+  // Lists, Tables, Code blocks, Nav
   const hasLists = $('ul, ol').length > 0
   const hasTables = $('table').length > 0
+  const hasCodeBlocks = $('pre, code').length > 0
+  const hasNav = $('nav').length > 0
+
+  // Schema type detection
+  const schemasJoined = schemas.join(' ')
+  const hasAuthorSchema = schemasJoined.includes('"Person"') || schemasJoined.includes('"author"')
+  const hasOrganizationSchema = schemasJoined.includes('"Organization"')
+  const hasDatePublished = schemasJoined.includes('"datePublished"')
+  const hasDateModified = schemasJoined.includes('"dateModified"')
+  const hasBreadcrumbSchema = schemasJoined.includes('"BreadcrumbList"')
 
   // Word count & First 500 words
   const bodyText = $("body").text().replace(/\s+/g, " ").trim()
@@ -170,8 +197,11 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
     headings,
     h1Count,
     h2Count,
+    h3Count,
     imageCount,
     missingAltCount,
+    imageAltTexts,
+    altTextMissingRatio,
     internalLinks,
     externalLinks,
     schemas,
@@ -182,6 +212,13 @@ export async function scrapeUrl(url: string): Promise<ScrapedData> {
     wordCount,
     hasLists,
     hasTables,
+    hasCodeBlocks,
+    hasAuthorSchema,
+    hasOrganizationSchema,
+    hasDatePublished,
+    hasDateModified,
+    hasBreadcrumbSchema,
+    hasNav,
     first500Words,
     h2h3Paragraphs,
     url,

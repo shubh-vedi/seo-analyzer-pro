@@ -4,15 +4,16 @@ interface ScoreRingProps {
   score: number
   size?: number
   label?: string
+  subtitle?: string
+  colorOverride?: string
 }
 
-export function ScoreRing({ score, size = 120, label }: ScoreRingProps) {
+export function ScoreRing({ score, size = 120, label, subtitle, colorOverride }: ScoreRingProps) {
   const radius = (size - 20) / 2
   const circumference = 2 * Math.PI * radius
   const strokeDashoffset = circumference - (score / 100) * circumference
 
-  const color =
-    score >= 70 ? "#4ade80" : score >= 40 ? "#fbbf24" : "#f87171"
+  const color = colorOverride || (score >= 70 ? "#4ade80" : score >= 40 ? "#fbbf24" : "#f87171")
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -46,6 +47,7 @@ export function ScoreRing({ score, size = 120, label }: ScoreRingProps) {
           </span>
           <span className="text-[10px] font-black text-slate-500">/100</span>
         </div>
+        {subtitle && <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 px-1.5 py-0.5 bg-slate-100 rounded-sm" style={{ color }}>{subtitle}</span>}
       </div>
     </div>
   )

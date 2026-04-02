@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma"
 import { scrapeUrl } from "@/lib/scraper"
 import { calculateScore, getIssues } from "@/lib/scorer"
 import { calculateAEOScore } from "@/lib/aeo-scorer"
+import { calculateGEOScore } from "@/lib/geo-scorer"
+import { calculateAIOScore } from "@/lib/aio-scorer"
+import { calculateGuidelinesScore } from "@/lib/guidelines-scorer"
 import { getAiTips } from "@/lib/gemini"
 
 export async function POST(req: NextRequest) {
@@ -27,7 +30,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 })
     }
 
-    // Rate limiting: 2 audits per day (resets at midnight UTC)
+    // Rate limiting: 5 audits per day (resets at midnight UTC)
     const userId = session.user.id
     const startOfDay = new Date()
     startOfDay.setUTCHours(0, 0, 0, 0)
@@ -39,9 +42,9 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    if (todayCount >= 2) {
+    if (todayCount >= 5) {
       return NextResponse.json(
-        { error: "Daily limit reached. You can run 2 audits per day. Resets at midnight UTC." },
+        { error: "Daily limit reached. You can run 5 audits per day. Resets at midnight UTC." },
         { status: 429 }
       )
     }
@@ -49,12 +52,13 @@ export async function POST(req: NextRequest) {
     // Scrape
     const scrapedData = await scrapeUrl(parsedUrl.toString())
 
-    // Score
+    // Scores
     const scoreBreakdown = calculateScore(scrapedData)
     const issues = getIssues(scrapedData, scoreBreakdown)
-    
-    // AEO Score
     const aeoResult = calculateAEOScore(scrapedData)
+    const geoResult = calculateGEOScore(scrapedData)
+    const aioResult = calculateAIOScore(scrapedData)
+    const guidelinesResult = calculateGuidelinesScore(scrapedData)
 
     // AI tips
     let aiTips: string | null = null
@@ -70,7 +74,15 @@ export async function POST(req: NextRequest) {
       data: {
         url: parsedUrl.toString(),
         score: scoreBreakdown.total,
-        data: { ...scrapedData, scoreBreakdown, issues, aeoResult } as object,
+        data: {
+          ...scrapedData,
+          scoreBreakdown,
+          issues,
+          aeoResult,
+          geoResult,
+          aioResult,
+          guidelinesResult,
+        } as object,
         aiTips,
         userId,
       },
@@ -81,14 +93,20 @@ export async function POST(req: NextRequest) {
       url: audit.url,
       score: audit.score,
       aeoScore: aeoResult.score,
-      aeoResult: aeoResult,
+      aeoResult,
+      geoScore: geoResult.score,
+      geoResult,
+      aioScore: aioResult.score,
+      aioResult,
+      guidelinesScore: guidelinesResult.score,
+      guidelinesResult,
       data: audit.data,
       aiTips: audit.aiTips ? JSON.parse(audit.aiTips) : null,
       createdAt: audit.createdAt,
     })
   } catch (err) {
     console.error("Analyze error:", err)
-    
+
     let errorMessage = "Analysis failed"
     let status = 500
 
