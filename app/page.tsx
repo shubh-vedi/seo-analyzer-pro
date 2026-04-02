@@ -28,7 +28,7 @@ export default function LandingPage() {
               Sign In
             </Link>
             <Link href="/analyze">
-              <Button className="bg-white/10 hover:bg-white/20 text-white border-0 font-semibold px-5">
+              <Button className="bg-white/10 hover:bg-white/20 text-white border-0 font-semibold px-5 shadow-none">
                 Go to App
               </Button>
             </Link>
