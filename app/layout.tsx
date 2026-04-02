@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { Navbar } from "@/components/navbar"
-import { NavbarVisibility } from "@/components/navbar-visibility"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,9 +25,7 @@ export default function RootLayout({
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-white/[0.02] rounded-full blur-[160px]" />
         </div>
         
-        <NavbarVisibility>
-          <Navbar />
-        </NavbarVisibility>
+        <Navbar />
         <main className="relative z-0">
           {children}
         </main>
